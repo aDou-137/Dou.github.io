@@ -1,17 +1,55 @@
 // ============================================
-// Dou's Space - Interactions
+// Dou's Space - Liquid Glass Interactions
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Scroll-based fade-in animations
+  initTheme();
   initScrollAnimations();
-  
-  // Navbar background on scroll
   initNavbar();
-  
-  // Smooth page transitions
   initPageTransitions();
+  initLiquidShimmer();
 });
+
+// ============================================
+// Theme Toggle
+// ============================================
+function initTheme() {
+  const toggle = document.querySelector('.theme-toggle');
+  if (!toggle) return;
+
+  // Load saved theme or default to dark
+  const saved = localStorage.getItem('dou-theme') || 'dark';
+  setTheme(saved, false);
+
+  toggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    setTheme(next, true);
+  });
+}
+
+function setTheme(theme, animate) {
+  if (animate) {
+    document.documentElement.classList.add('theme-transitioning');
+    setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 600);
+  }
+
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('dou-theme', theme);
+
+  // Update toggle icon
+  const icon = document.querySelector('.theme-toggle-icon');
+  if (icon) {
+    icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+  }
+
+  // Update giscus theme if present
+  const giscusFrame = document.querySelector('iframe.giscus-frame');
+  if (giscusFrame) {
+    const giscusTheme = theme === 'dark' ? 'dark' : 'light';
+    giscusFrame.src = giscusFrame.src.replace(/theme=[^&]*/, `theme=${giscusTheme}`);
+  }
+}
 
 // ============================================
 // Scroll Animations
@@ -29,11 +67,10 @@ function initScrollAnimations() {
     rootMargin: '0px 0px -50px 0px'
   });
 
-  // Add fade-in class to elements
   const animateElements = document.querySelectorAll(
     '.article-card, .section-header, .about-card, .timeline, .comments-section'
   );
-  
+
   animateElements.forEach((el, i) => {
     el.classList.add('fade-in');
     el.style.transitionDelay = `${i * 0.1}s`;
@@ -50,13 +87,19 @@ function initNavbar() {
 
   window.addEventListener('scroll', () => {
     const currentScroll = window.scrollY;
+    const isDark = !document.documentElement.getAttribute('data-theme') ||
+                   document.documentElement.getAttribute('data-theme') === 'dark';
 
     if (currentScroll > 50) {
-      nav.style.background = 'rgba(10, 10, 25, 0.85)';
-      nav.style.borderBottomColor = 'rgba(255, 255, 255, 0.1)';
+      nav.style.background = isDark
+        ? 'rgba(10, 10, 25, 0.85)'
+        : 'rgba(255, 255, 255, 0.7)';
+      nav.style.borderBottomColor = isDark
+        ? 'rgba(255, 255, 255, 0.1)'
+        : 'rgba(0, 0, 0, 0.08)';
     } else {
-      nav.style.background = 'var(--glass-bg)';
-      nav.style.borderBottomColor = 'var(--glass-border)';
+      nav.style.background = '';
+      nav.style.borderBottomColor = '';
     }
 
     lastScroll = currentScroll;
@@ -67,15 +110,13 @@ function initNavbar() {
 // Page Transitions
 // ============================================
 function initPageTransitions() {
-  // Add a subtle entrance animation
   document.body.style.opacity = '0';
   document.body.style.transition = 'opacity 0.4s ease';
-  
+
   requestAnimationFrame(() => {
     document.body.style.opacity = '1';
   });
 
-  // Smooth transition for internal links
   document.querySelectorAll('a[href^=""]').forEach(link => {
     const href = link.getAttribute('href');
     if (href && href.endsWith('.html') && !href.startsWith('http')) {
@@ -91,7 +132,40 @@ function initPageTransitions() {
 }
 
 // ============================================
-// Particle Effect on Click (subtle)
+// Liquid Glass - Dynamic Shimmer on Mouse Move
+// ============================================
+function initLiquidShimmer() {
+  const cards = document.querySelectorAll('.glass-card');
+
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+      // Move the refraction highlight to follow cursor
+      const afterEl = card.querySelector(':after') || card;
+      card.style.setProperty('--shimmer-x', `${x}%`);
+      card.style.setProperty('--shimmer-y', `${y}%`);
+    });
+  });
+
+  // Add dynamic shimmer CSS
+  const style = document.createElement('style');
+  style.textContent = `
+    .glass-card::after {
+      background: radial-gradient(
+        ellipse at var(--shimmer-x, 30%) var(--shimmer-y, 20%),
+        rgba(255, 255, 255, 0.05) 0%,
+        transparent 50%
+      ) !important;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+// ============================================
+// Click Ripple (subtle)
 // ============================================
 document.addEventListener('click', (e) => {
   createRipple(e.clientX, e.clientY);
@@ -99,6 +173,12 @@ document.addEventListener('click', (e) => {
 
 function createRipple(x, y) {
   const ripple = document.createElement('div');
+  const isDark = !document.documentElement.getAttribute('data-theme') ||
+                 document.documentElement.getAttribute('data-theme') === 'dark';
+  const color = isDark
+    ? 'rgba(167, 139, 250, 0.4)'
+    : 'rgba(124, 58, 237, 0.25)';
+
   ripple.style.cssText = `
     position: fixed;
     left: ${x}px;
@@ -106,7 +186,7 @@ function createRipple(x, y) {
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background: rgba(167, 139, 250, 0.4);
+    background: ${color};
     pointer-events: none;
     z-index: 9999;
     transform: translate(-50%, -50%);
@@ -116,9 +196,9 @@ function createRipple(x, y) {
   setTimeout(() => ripple.remove(), 600);
 }
 
-// Add ripple animation
-const style = document.createElement('style');
-style.textContent = `
+// Ripple animation
+const rippleStyle = document.createElement('style');
+rippleStyle.textContent = `
   @keyframes ripple-out {
     to {
       width: 80px;
@@ -127,4 +207,4 @@ style.textContent = `
     }
   }
 `;
-document.head.appendChild(style);
+document.head.appendChild(rippleStyle);
