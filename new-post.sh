@@ -30,46 +30,96 @@ cat > "$FILE" <<EOF
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <a href="/" class="site-title">Dou's Space</a>
-      <nav>
-        <a href="/">首页</a>
-        <a href="/archive">归档</a>
-        <a href="/about">关于</a>
-      </nav>
+  <div class="bg-wrapper">
+    <div class="bg-image"></div>
+    <div class="bg-gradient"></div>
+    <div class="floating-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
     </div>
-  </header>
+  </div>
 
-  <main class="container">
-    <div class="post-content">
-      <h1>${TITLE}</h1>
-      <div class="post-meta">${DATE}</div>
+  <nav class="nav glass">
+    <a href="/" class="nav-logo">✦ Dou's Space</a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">首页</a>
+      <a href="/archive" class="nav-link">归档</a>
+      <a href="/about" class="nav-link">关于</a>
+    </div>
+  </nav>
 
-      <p>在这里写正文...</p>
+  <main class="container article-page">
+    <article class="article-full glass-card">
+      <div class="article-header">
+        <div class="article-meta">
+          <span class="article-date">${DATE}</span>
+          <span class="article-tag">随笔</span>
+        </div>
+        <h1 class="article-full-title">${TITLE}</h1>
+      </div>
+
+      <div class="article-body">
+        <p class="article-lead">在这里写摘要...</p>
+
+        <p>在这里写正文...</p>
+
+        <p class="article-end">— End —</p>
+      </div>
+    </article>
+
+    <section class="comments-section glass-card">
+      <h2 class="comments-title">💬 评论区</h2>
+      <script src="https://giscus.app/client.js"
+        data-repo="aDou-137/Dou.github.io"
+        data-repo-id="R_kgDOSlYlhQ"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOSlYlhc4C9qTZ"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="dark"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+
+    <div class="back-link">
+      <a href="/" class="back-button glass">← 返回首页</a>
     </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <p>&copy; 2026 Dou's Space · Powered by GitHub Pages</p>
-    </div>
+  <footer class="footer glass">
+    <p>&copy; 2026 Dou's Space · Powered by GitHub Pages</p>
   </footer>
+
+  <script src="/script.js"></script>
 </body>
 </html>
 EOF
 
-# 2. 更新首页（在第一个 </main> 前插入）
-sed -i "/<\/main>/i\\
-    <article class=\"post-card\">\\
-      <h2><a href=\"/${FILE%.html}\">${TITLE}</a></h2>\\
-      <div class=\"post-meta\">${DATE}</div>\\
-      <p class=\"post-summary\">点击阅读...</p>\\
-    </article>" index.html
+# 2. 更新首页（在标记处插入新文章卡片）
+sed -i "/<!-- new-post-insert -->/a\\
+\\
+      <article class=\"article-card glass-card\">\\
+        <div class=\"article-meta\">\\
+          <span class=\"article-date\">${DATE}</span>\\
+          <span class=\"article-tag\">随笔</span>\\
+        </div>\\
+        <h3 class=\"article-title\"><a href=\"/${FILE%.html}\">${TITLE}</a></h3>\\
+        <p class=\"article-excerpt\">点击阅读...</p>\\
+        <div class=\"article-footer\">\\
+          <span class=\"read-more\">阅读全文 →</span>\\
+        </div>\\
+      </article>" index.html
 
-# 3. 更新归档页（在 </ul> 前插入）
-sed -i "/<\/ul>/i\\
-        <li>\\
+# 3. 更新归档页（在第一个 </ul> 前插入）
+sed -i "/<\\/ul>/i\\
+        <li class=\"archive-item\">\\
           <span class=\"archive-date\">${DATE}</span>\\
           <a class=\"archive-title\" href=\"/${FILE%.html}\">${TITLE}</a>\\
         </li>" archive.html
