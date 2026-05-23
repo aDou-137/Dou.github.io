@@ -7,50 +7,97 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <a href="/" class="site-title">Dou's Space</a>
-      <nav>
-        <a href="/">首页</a>
-        <a href="/archive">归档</a>
-        <a href="/about">关于</a>
-      </nav>
+  <!-- Background -->
+  <div class="bg-wrapper">
+    <div class="bg-image"></div>
+    <div class="bg-gradient"></div>
+    <div class="floating-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
     </div>
-  </header>
+  </div>
 
-  <main class="container">
-    <div class="post-content">
-      <h1>你好，世界</h1>
-      <div class="post-meta">2026-05-23</div>
+  <!-- Navigation -->
+  <nav class="nav glass">
+    <a href="/" class="nav-logo">✦ Dou's Space</a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">首页</a>
+      <a href="/archive" class="nav-link">归档</a>
+      <a href="/about" class="nav-link">关于</a>
+    </div>
+  </nav>
 
-      <p>这是我的第一篇博客文章。在这个小小的数字空间里，我打算记录下生活中值得记住的片段——想法、发现、以及那些让我停下来思考的瞬间。</p>
+  <!-- Article -->
+  <main class="container article-page">
+    <article class="article-full glass-card">
+      <div class="article-header">
+        <div class="article-meta">
+          <span class="article-date">2026-05-23</span>
+          <span class="article-tag">随笔</span>
+        </div>
+        <h1 class="article-full-title">你好，世界</h1>
+      </div>
 
-      <h2>为什么要写博客？</h2>
+      <div class="article-body">
+        <p class="article-lead">这是我的第一篇博客文章。在这个小小的数字空间里，我打算记录下生活中值得记住的片段。</p>
 
-      <p>写作是最好的思考工具。把模糊的想法变成清晰的文字，这个过程本身就很有价值。而且，几年后回头看这些文字，应该会很有趣。</p>
+        <h2>为什么要写博客？</h2>
 
-      <blockquote>
-        <p>"写作就是思考。不写，你只是以为自己在思考。"</p>
-      </blockquote>
+        <p>写作是最好的思考工具。把模糊的想法变成清晰的文字，这个过程本身就很有价值。而且，几年后回头看这些文字，应该会很有趣。</p>
 
-      <h2>这里会写些什么？</h2>
+        <blockquote>
+          <p>"写作就是思考。不写，你只是以为自己在思考。"</p>
+        </blockquote>
 
-      <ul>
-        <li>技术笔记和学习心得</li>
-        <li>读书和生活的随想</li>
-        <li>偶尔的胡思乱想</li>
-      </ul>
+        <h2>这里会写些什么？</h2>
 
-      <p>没有严格的主题限制，想到什么写什么。毕竟，这是 <strong>Dou's Space</strong>。</p>
+        <ul>
+          <li>技术笔记和学习心得</li>
+          <li>读书和生活的随想</li>
+          <li>偶尔的胡思乱想</li>
+        </ul>
 
-      <p>欢迎来到我的世界。🌿</p>
+        <p>没有严格的主题限制，想到什么写什么。毕竟，这是 <strong>Dou's Space</strong>。</p>
+
+        <p>欢迎来到我的世界。🌿</p>
+
+        <p class="article-end">— End —</p>
+      </div>
+    </article>
+
+    <!-- Comments -->
+    <section class="comments-section glass-card">
+      <h2 class="comments-title">💬 评论区</h2>
+      <script src="https://giscus.app/client.js"
+        data-repo="aDou-137/Dou.github.io"
+        data-repo-id="R_kgDOSlYlhQ"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOSlYlhc4C9qTZ"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="dark"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </section>
+
+    <!-- Back -->
+    <div class="back-link">
+      <a href="/" class="back-button glass">← 返回首页</a>
     </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <p>&copy; 2026 Dou's Space · Powered by GitHub Pages</p>
-    </div>
+  <!-- Footer -->
+  <footer class="footer glass">
+    <p>&copy; 2026 Dou's Space · Powered by GitHub Pages</p>
   </footer>
+
+  <script src="/script.js"></script>
 </body>
 </html>
