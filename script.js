@@ -43,11 +43,14 @@ function setTheme(theme, animate) {
     icon.textContent = theme === 'dark' ? '🌙' : '☀️';
   }
 
-  // Update giscus theme if present
-  const giscusFrame = document.querySelector('iframe.giscus-frame');
-  if (giscusFrame) {
-    const giscusTheme = theme === 'dark' ? 'dark' : 'light';
-    giscusFrame.src = giscusFrame.src.replace(/theme=[^&]*/, `theme=${giscusTheme}`);
+  // Update Cusdis theme if present
+  const cusdisThread = document.getElementById('cusdis_thread');
+  if (cusdisThread) {
+    cusdisThread.setAttribute('data-theme', theme);
+    // Re-render Cusdis with new theme
+    if (window.CUSDIS) {
+      window.CUSDIS.setTheme(theme);
+    }
   }
 }
 
