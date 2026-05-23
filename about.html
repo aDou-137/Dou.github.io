@@ -4,32 +4,100 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>关于 - Dou's Space</title>
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <a href="/" class="site-title">Dou's Space</a>
-      <nav>
-        <a href="/">首页</a>
-        <a href="/archive">归档</a>
-        <a href="/about">关于</a>
-      </nav>
+  <!-- Background -->
+  <div class="bg-wrapper">
+    <div class="bg-image"></div>
+    <div class="bg-gradient"></div>
+    <div class="floating-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
     </div>
-  </header>
+  </div>
 
-  <main class="container">
-    <div class="page-content">
-      <h1>关于</h1>
-      <p>这里是 <strong>Dou's Space</strong>，一个用来记录想法和生活的小站。</p>
-      <p>如果你有什么想说的，欢迎在这里留下足迹。</p>
+  <!-- Navigation -->
+  <nav class="nav glass">
+    <a href="/" class="nav-logo">✦ Dou's Space</a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">首页</a>
+      <a href="/archive" class="nav-link">归档</a>
+      <a href="/about" class="nav-link active">关于</a>
+    </div>
+  </nav>
+
+  <!-- About -->
+  <main class="container about-page">
+    <div class="about-card glass-card">
+      <div class="about-avatar">
+        <div class="avatar-ring">
+          <div class="avatar-placeholder">D</div>
+        </div>
+      </div>
+      <div class="about-content">
+        <h1 class="about-name">Dou</h1>
+        <p class="about-bio">一个用文字记录生活的普通人。</p>
+
+        <div class="about-divider"></div>
+
+        <div class="about-section">
+          <h2 class="about-section-title">关于这个博客</h2>
+          <p>这里是 <strong>Dou's Space</strong>，一个用来记录想法和生活的小站。如果你有什么想说的，欢迎在这里留下足迹。</p>
+        </div>
+
+        <div class="about-section">
+          <h2 class="about-section-title">兴趣</h2>
+          <div class="about-tags">
+            <span class="about-tag">📖 阅读</span>
+            <span class="about-tag">✍️ 写作</span>
+            <span class="about-tag">🎮 游戏</span>
+            <span class="about-tag">🎵 音乐</span>
+            <span class="about-tag">📷 摄影</span>
+          </div>
+        </div>
+
+        <div class="about-section">
+          <h2 class="about-section-title">联系我</h2>
+          <p class="about-contact">如果你想聊聊天，可以通过以下方式找到我：</p>
+          <div class="about-links">
+            <a href="https://github.com/aDou-137" target="_blank" class="about-link glass">
+              <span class="link-icon">🐙</span>
+              <span>GitHub</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline glass-card">
+      <h2 class="timeline-title">时间线</h2>
+      <div class="timeline-items">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <span class="timeline-date">2026年5月</span>
+            <p>建立了这个博客，开始记录生活</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <span class="timeline-date">未来</span>
+            <p>继续写下去，看看会发生什么 ✨</p>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <p>&copy; 2026 Dou's Space · Powered by GitHub Pages</p>
-    </div>
+  <!-- Footer -->
+  <footer class="footer glass">
+    <p>&copy; 2026 Dou's Space · Powered by GitHub Pages</p>
   </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
