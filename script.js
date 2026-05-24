@@ -276,21 +276,47 @@ function initReadingTime() {
 
 // ============================================
 // Article Card Click-to-Navigate
+// First click: reveal "阅读全文" button
+// Second click (on button): navigate to article
 // ============================================
 function initArticleCards() {
   document.querySelectorAll('.article-card[data-href]').forEach(card => {
     card.addEventListener('click', (e) => {
-      // Don't navigate if clicking on an existing link
-      if (e.target.closest('a')) return;
-      const href = card.getAttribute('data-href');
-      if (href) {
-        // Page transition effect
-        document.body.style.opacity = '0';
-        setTimeout(() => {
-          window.location.href = href;
-        }, 300);
+      // If clicking on the read-more link, let it navigate naturally
+      if (e.target.closest('.read-more')) return;
+
+      // If card already activated, allow click-through to title link
+      if (card.classList.contains('card-activated')) {
+        const titleLink = card.querySelector('.article-title a');
+        if (titleLink && !e.target.closest('a')) {
+          e.preventDefault();
+          document.body.style.opacity = '0';
+          setTimeout(() => {
+            window.location.href = card.getAttribute('data-href');
+          }, 300);
+        }
+        return;
       }
+
+      // First click: activate card, show read-more button
+      e.preventDefault();
+      e.stopPropagation();
+      card.classList.add('card-activated');
+
+      // Remove activation from other cards
+      document.querySelectorAll('.article-card.card-activated').forEach(other => {
+        if (other !== card) other.classList.remove('card-activated');
+      });
     });
+  });
+
+  // Click outside to deactivate
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.article-card')) {
+      document.querySelectorAll('.article-card.card-activated').forEach(card => {
+        card.classList.remove('card-activated');
+      });
+    }
   });
 }
 

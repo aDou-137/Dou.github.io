@@ -615,6 +615,22 @@ a:hover { opacity: .85; }
   transform: translateX(0);
 }
 
+/* Card activated state (first click reveals read-more) */
+.article-card.card-activated .read-more {
+  opacity: 1;
+  transform: translateX(0);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.article-card.card-activated::after {
+  opacity: 1;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 2px 12px var(--accent-glow); }
+  50% { box-shadow: 0 4px 20px var(--accent-glow), 0 0 30px rgba(167, 139, 250, 0.15); }
+}
+
 /* ============================================
    Article Full Page
    ============================================ */
