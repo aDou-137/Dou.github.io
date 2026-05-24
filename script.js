@@ -47,9 +47,10 @@ function setTheme(theme, animate) {
   const cusdisThread = document.getElementById('cusdis_thread');
   if (cusdisThread) {
     cusdisThread.setAttribute('data-theme', theme);
-    // Re-render Cusdis with new theme
-    if (window.CUSDIS) {
-      window.CUSDIS.setTheme(theme);
+    // Re-render Cusdis with new theme by reloading the iframe
+    const iframe = cusdisThread.querySelector('iframe');
+    if (iframe) {
+      iframe.src = iframe.src;
     }
   }
 }
@@ -120,17 +121,19 @@ function initPageTransitions() {
     document.body.style.opacity = '1';
   });
 
-  document.querySelectorAll('a[href^=""]').forEach(link => {
+  document.querySelectorAll('a[href]').forEach(link => {
     const href = link.getAttribute('href');
-    if (href && href.endsWith('.html') && !href.startsWith('http')) {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        document.body.style.opacity = '0';
-        setTimeout(() => {
-          window.location.href = href;
-        }, 300);
-      });
-    }
+    if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto:')) return;
+    // Skip links that are handled by card click
+    if (link.closest('.article-card[data-href]') && link.classList.contains('read-more')) return;
+
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.body.style.opacity = '0';
+      setTimeout(() => {
+        window.location.href = href;
+      }, 300);
+    });
   });
 }
 
@@ -166,6 +169,29 @@ function initLiquidShimmer() {
   `;
   document.head.appendChild(style);
 }
+
+// ============================================
+// Article Card Click-to-Navigate
+// ============================================
+function initArticleCards() {
+  document.querySelectorAll('.article-card[data-href]').forEach(card => {
+    card.addEventListener('click', (e) => {
+      // Don't navigate if clicking on an existing link
+      if (e.target.closest('a')) return;
+      const href = card.getAttribute('data-href');
+      if (href) {
+        // Page transition effect
+        document.body.style.opacity = '0';
+        setTimeout(() => {
+          window.location.href = href;
+        }, 300);
+      }
+    });
+  });
+}
+
+// Initialize on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', initArticleCards);
 
 // ============================================
 // Click Ripple (subtle)
