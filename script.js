@@ -43,15 +43,13 @@ function setTheme(theme, animate) {
     icon.textContent = theme === 'dark' ? '🌙' : '☀️';
   }
 
-  // Update Cusdis theme if present
-  const cusdisThread = document.getElementById('cusdis_thread');
-  if (cusdisThread) {
-    cusdisThread.setAttribute('data-theme', theme);
-    // Re-render Cusdis with new theme by reloading the iframe
-    const iframe = cusdisThread.querySelector('iframe');
-    if (iframe) {
-      iframe.src = iframe.src;
-    }
+  // Update Giscus theme if present
+  const giscusFrame = document.querySelector('.giscus-comments iframe');
+  if (giscusFrame) {
+    giscusFrame.contentWindow.postMessage(
+      { giscus: { setConfig: { theme: theme === 'dark' ? 'dark' : 'light' } } },
+      'https://giscus.app'
+    );
   }
 }
 
