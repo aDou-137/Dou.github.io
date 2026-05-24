@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
   initPageTransitions();
   initLiquidShimmer();
+  initReadingProgress();
+  initBackToTop();
+  initDynamicGreeting();
+  initReadingTime();
 });
 
 // ============================================
@@ -166,6 +170,108 @@ function initLiquidShimmer() {
     }
   `;
   document.head.appendChild(style);
+}
+
+// ============================================
+// Reading Progress Bar
+// ============================================
+function initReadingProgress() {
+  const articleBody = document.querySelector('.article-body');
+  if (!articleBody) return;
+
+  const progressBar = document.createElement('div');
+  progressBar.className = 'reading-progress';
+  document.body.appendChild(progressBar);
+
+  window.addEventListener('scroll', () => {
+    const rect = articleBody.getBoundingClientRect();
+    const articleTop = rect.top + window.scrollY;
+    const articleHeight = articleBody.offsetHeight;
+    const windowHeight = window.innerHeight;
+    const scrolled = window.scrollY - articleTop + windowHeight * 0.3;
+    const progress = Math.min(Math.max(scrolled / articleHeight * 100, 0), 100);
+    progressBar.style.width = progress + '%';
+  }, { passive: true });
+}
+
+// ============================================
+// Back to Top Button
+// ============================================
+function initBackToTop() {
+  const btn = document.createElement('button');
+  btn.className = 'back-to-top';
+  btn.innerHTML = '↑';
+  btn.setAttribute('aria-label', '回到顶部');
+  document.body.appendChild(btn);
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  }, { passive: true });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+// ============================================
+// Dynamic Greeting (Hero Section)
+// ============================================
+function initDynamicGreeting() {
+  const heroDate = document.querySelector('.hero-date');
+  if (!heroDate) return;
+
+  const hour = new Date().getHours();
+  let greeting, emoji;
+
+  if (hour >= 5 && hour < 9) {
+    greeting = '早安';
+    emoji = '🌅';
+  } else if (hour >= 9 && hour < 12) {
+    greeting = '上午好';
+    emoji = '☀️';
+  } else if (hour >= 12 && hour < 14) {
+    greeting = '午安';
+    emoji = '🌤️';
+  } else if (hour >= 14 && hour < 18) {
+    greeting = '下午好';
+    emoji = '🌇';
+  } else if (hour >= 18 && hour < 22) {
+    greeting = '晚上好';
+    emoji = '🌙';
+  } else {
+    greeting = '夜深了';
+    emoji = '✨';
+  }
+
+  heroDate.innerHTML = `<span class="greeting-emoji">${emoji}</span> ${greeting}`;
+}
+
+// ============================================
+// Estimated Reading Time
+// ============================================
+function initReadingTime() {
+  const articleBody = document.querySelector('.article-body');
+  if (!articleBody) return;
+
+  // Count Chinese characters + English words
+  const text = articleBody.textContent || '';
+  const chineseChars = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+  const englishWords = (text.replace(/[\u4e00-\u9fff]/g, ' ').match(/[a-zA-Z]+/g) || []).length;
+  const totalWords = chineseChars + englishWords;
+  const readingTime = Math.max(1, Math.ceil(totalWords / 400)); // ~400 words per minute
+
+  // Insert reading time into article meta
+  const articleMeta = document.querySelector('.article-header .article-meta');
+  if (articleMeta) {
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'reading-time';
+    timeSpan.textContent = `${readingTime} 分钟阅读`;
+    articleMeta.appendChild(timeSpan);
+  }
 }
 
 // ============================================
