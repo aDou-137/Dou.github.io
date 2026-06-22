@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initBackToTop();
   initDynamicGreeting();
   initReadingTime();
+  initHamburgerMenu();
+  initScrollIndicator();
+  initTypingEffect();
 });
 
 // ============================================
@@ -367,3 +370,97 @@ rippleStyle.textContent = `
   }
 `;
 document.head.appendChild(rippleStyle);
+
+// ============================================
+// Hamburger Menu (Mobile)
+// ============================================
+function initHamburgerMenu() {
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  const overlay = document.getElementById('navOverlay');
+  if (!hamburger || !navLinks) return;
+
+  function toggleMenu(open) {
+    const isOpen = open !== undefined ? open : !navLinks.classList.contains('open');
+    navLinks.classList.toggle('open', isOpen);
+    hamburger.classList.toggle('active', isOpen);
+    if (overlay) overlay.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  }
+
+  hamburger.addEventListener('click', () => toggleMenu());
+  if (overlay) overlay.addEventListener('click', () => toggleMenu(false));
+
+  // Close on nav link click
+  navLinks.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => toggleMenu(false));
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') toggleMenu(false);
+  });
+
+  // Close on resize to desktop
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) toggleMenu(false);
+  });
+}
+
+// ============================================
+// Scroll Indicator (Hero)
+// ============================================
+function initScrollIndicator() {
+  const indicator = document.getElementById('scrollIndicator');
+  if (!indicator) return;
+
+  indicator.addEventListener('click', () => {
+    const articlesSection = document.querySelector('.container');
+    if (articlesSection) {
+      articlesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+  // Hide on scroll
+  window.addEventListener('scroll', () => {
+    indicator.style.opacity = window.scrollY > 100 ? '0' : '';
+    indicator.style.pointerEvents = window.scrollY > 100 ? 'none' : '';
+  }, { passive: true });
+}
+
+// ============================================
+// Typing Effect (Hero Subtitle)
+// ============================================
+function initTypingEffect() {
+  const subtitle = document.querySelector('.hero-subtitle');
+  if (!subtitle) return;
+
+  const fullText = subtitle.textContent.trim();
+  subtitle.textContent = '';
+  const cursor = document.createElement('span');
+  cursor.className = 'typing-cursor';
+  subtitle.appendChild(cursor);
+
+  let i = 0;
+  const speed = 80; // ms per character
+
+  function typeNext() {
+    if (i < fullText.length) {
+      // Insert char before cursor
+      const charNode = document.createTextNode(fullText.charAt(i));
+      subtitle.insertBefore(charNode, cursor);
+      i++;
+      setTimeout(typeNext, speed + Math.random() * 40);
+    } else {
+      // Remove cursor after a delay
+      setTimeout(() => {
+        cursor.style.animation = 'none';
+        cursor.style.opacity = '0';
+        cursor.style.transition = 'opacity 0.5s ease';
+      }, 2000);
+    }
+  }
+
+  // Start typing after a short delay
+  setTimeout(typeNext, 600);
+}

@@ -42,12 +42,21 @@ cat > "$FILE" <<EOF
 
   <nav class="nav glass">
     <a href="/" class="nav-logo">✦ Dou's Space</a>
-    <div class="nav-links">
-      <a href="/" class="nav-link">首页</a>
-      <a href="/archive" class="nav-link">归档</a>
-      <a href="/about" class="nav-link">关于</a>
+    <div class="nav-right">
+      <div class="nav-links" id="navLinks">
+        <a href="/" class="nav-link">首页</a>
+        <a href="/archive" class="nav-link">归档</a>
+        <a href="/about" class="nav-link">关于</a>
+      </div>
+      <button class="theme-toggle" aria-label="切换主题">
+        <span class="theme-toggle-icon">🌙</span>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="菜单">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
+  <div class="nav-overlay" id="navOverlay"></div>
 
   <main class="container article-page">
     <article class="article-full glass-card">
