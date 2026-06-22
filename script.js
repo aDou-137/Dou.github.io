@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initHamburgerMenu();
   initScrollIndicator();
   initTypingEffect();
+  initHeroQuote();
 });
 
 // ============================================
@@ -463,4 +464,29 @@ function initTypingEffect() {
 
   // Start typing after a short delay
   setTimeout(typeNext, 600);
+}
+
+// ============================================
+// Hero Random Quote
+// ============================================
+function initHeroQuote() {
+  const quoteEl = document.getElementById('heroQuote');
+  if (!quoteEl) return;
+
+  const quotes = [
+    '生活不是等待暴风雨过去，而是学会在雨中翩翩起舞。',
+    '世界上只有一种英雄主义，就是认清生活的真相后依然热爱它。',
+    '温柔地对待自己，你也不过是宇宙中一个努力发光的孩子。',
+    '所有的大人都曾经是小孩，虽然，只有少数人记得。',
+    '人间值得，未来可期。',
+    '你不能把这个世界让给你所鄙视的人。',
+    '慢慢来，比较快。',
+    '凡是过往，皆为序章。',
+    '种一棵树最好的时间是十年前，其次是现在。',
+    '你不需要很厉害才能开始，但你需要开始才能变得很厉害。',
+    '日子很长，不必慌张。',
+    '保持热爱，奔赴山海。',
+  ];
+
+  quoteEl.textContent = quotes[Math.floor(Math.random() * quotes.length)];
 }

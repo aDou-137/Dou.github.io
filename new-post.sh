@@ -27,6 +27,13 @@ cat > "$FILE" <<EOF
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${TITLE} - Dou's Space</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta name="description" content="在这里写摘要...">
+  <meta property="og:title" content="${TITLE}">
+  <meta property="og:description" content="在这里写摘要...">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://zhzxyw.space/${FILE%.html}">
+  <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
