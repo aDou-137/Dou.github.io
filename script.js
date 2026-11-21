@@ -4,6 +4,8 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
+  initPalette();
+  initParticles();
   initNavScroll();
   initHamburger();
   initReveal();
@@ -17,6 +19,234 @@ document.addEventListener('DOMContentLoaded', () => {
   initReadingProgress();
   initBackToTop();
 });
+
+// ============================================
+// 主题色（可自定义）
+// ============================================
+const DEFAULT_ACCENT = '#b23a2b';
+const ACCENT_KEY = 'dou-accent';
+let curAccent = DEFAULT_ACCENT;
+
+function normHex(v) {
+  if (!v) return null;
+  v = v.trim().toLowerCase();
+  if (/^#[0-9a-f]{6}$/.test(v)) return v;
+  if (/^#[0-9a-f]{3}$/.test(v)) {
+    return '#' + v[1] + v[1] + v[2] + v[2] + v[3] + v[3];
+  }
+  return null;
+}
+
+function hexRgb(hex) {
+  return [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+}
+
+// 相对亮度（sRGB）
+function hexLum(hex) {
+  const [r, g, b] = hexRgb(hex).map(v => {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function mixHex(a, b, t) {
+  const ra = hexRgb(a), rb = hexRgb(b);
+  return '#' + ra.map((v, i) =>
+    Math.round(v + (rb[i] - v) * t).toString(16).padStart(2, '0')).join('');
+}
+
+function applyAccent(hex, save) {
+  const v = normHex(hex) || DEFAULT_ACCENT;
+  curAccent = v;
+  const root = document.documentElement;
+  root.style.setProperty('--accent-user', v);
+  // 强调色上的文字颜色按亮度自动反色，保证任何颜色下都可读
+  root.style.setProperty('--on-accent', hexLum(v) > 0.4 ? '#262019' : '#f8f4ea');
+  if (save) {
+    try { localStorage.setItem(ACCENT_KEY, v); } catch (e) {}
+    syncSwatch(v);
+  }
+  if (window.Particles) window.Particles.refresh();
+}
+
+function syncSwatch(hex) {
+  document.querySelectorAll('.swatch').forEach(s =>
+    s.classList.toggle('active', normHex(s.dataset.color) === hex));
+  const picker = document.getElementById('accentPicker');
+  if (picker) picker.value = hex;
+}
+
+function initPalette() {
+  const actions = document.querySelector('.nav-actions');
+  if (!actions) return;
+
+  const PRESETS = [
+    { hex: '#b23a2b', name: '朱砂' },
+    { hex: '#2f5d8a', name: '靛青' },
+    { hex: '#4a7c59', name: '苔绿' },
+    { hex: '#7d5ba6', name: '藤紫' },
+    { hex: '#b07d2b', name: '赭黄' },
+    { hex: '#455a64', name: '青灰' },
+  ];
+
+  const toggle = document.createElement('button');
+  toggle.className = 'palette-toggle';
+  toggle.id = 'paletteToggle';
+  toggle.setAttribute('aria-label', '自定义主题色');
+  toggle.textContent = '调色';
+
+  const panel = document.createElement('div');
+  panel.className = 'palette';
+  panel.id = 'palette';
+  panel.innerHTML = `
+    <p class="palette-title">主题色</p>
+    <div class="palette-swatches">
+      ${PRESETS.map(p =>
+        `<button class="swatch" data-color="${p.hex}" style="background:${p.hex}" ` +
+        `aria-label="${p.name}" title="${p.name}"></button>`).join('')}
+    </div>
+    <div class="palette-custom">
+      <input type="color" id="accentPicker" value="${DEFAULT_ACCENT}" aria-label="自定义颜色">
+      <span class="palette-label">自定义</span>
+      <button class="palette-reset" id="accentReset">恢复默认</button>
+    </div>`;
+
+  actions.appendChild(toggle);
+  actions.appendChild(panel);
+
+  const setOpen = (open) => {
+    panel.classList.toggle('open', open);
+    toggle.classList.toggle('open', open);
+  };
+
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setOpen(!panel.classList.contains('open'));
+  });
+  panel.addEventListener('click', (e) => e.stopPropagation());
+  document.addEventListener('click', () => setOpen(false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+
+  panel.querySelectorAll('.swatch').forEach(s => {
+    s.addEventListener('click', () => applyAccent(s.dataset.color, true));
+  });
+  panel.querySelector('#accentPicker').addEventListener('input', (e) =>
+    applyAccent(e.target.value, true));
+  panel.querySelector('#accentReset').addEventListener('click', () =>
+    applyAccent(DEFAULT_ACCENT, true));
+
+  // 恢复保存的主题色
+  let saved = DEFAULT_ACCENT;
+  try { saved = localStorage.getItem(ACCENT_KEY) || DEFAULT_ACCENT; } catch (e) {}
+  applyAccent(saved, false);
+  syncSwatch(normHex(saved));
+}
+
+// ============================================
+// 墨尘粒子（轻量 Canvas，低干扰）
+// ============================================
+function initParticles() {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !document.createElement('canvas').getContext) return;
+
+  const canvas = document.createElement('canvas');
+  canvas.className = 'ink-particles';
+  canvas.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+
+  let w = 0, h = 0, raf = 0, parts = [];
+  const mouse = { x: -9999, y: -9999 };
+  let colors = { ink: '#262019', accent: '#b23a2b' };
+
+  function refresh() {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const cs = getComputedStyle(document.documentElement);
+    const ink = normHex(cs.getPropertyValue('--ink')) || '#262019';
+    // 深色主题下把强调色调亮，让粒子在深底上可见
+    colors.ink = ink;
+    colors.accent = dark ? mixHex(curAccent, '#ffffff', 0.28) : curAccent;
+  }
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = window.innerWidth;
+    h = window.innerHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const n = Math.max(16, Math.min(52, Math.round(w * h / 30000)));
+    parts = Array.from({ length: n }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: 0.6 + Math.random() * 1.7,
+      a: 0.05 + Math.random() * 0.13,
+      vx: (Math.random() - 0.5) * 0.12,
+      vy: -0.05 - Math.random() * 0.13,
+      ph: Math.random() * Math.PI * 2,
+      sp: 0.004 + Math.random() * 0.008,
+      ac: Math.random() < 0.28,
+    }));
+  }
+
+  function tick() {
+    ctx.clearRect(0, 0, w, h);
+    for (const p of parts) {
+      p.ph += p.sp;
+      p.x += p.vx + Math.sin(p.ph) * 0.14;
+      p.y += p.vy;
+
+      // 鼠标附近轻微推开，像尘埃被气流扰动
+      const dx = p.x - mouse.x;
+      const dy = p.y - mouse.y;
+      const d2 = dx * dx + dy * dy;
+      if (d2 < 14400 && d2 > 0.01) {
+        const f = (1 - Math.sqrt(d2) / 120) * 0.5;
+        p.x += dx * f * 0.045;
+        p.y += dy * f * 0.045;
+      }
+
+      if (p.y < -8) { p.y = h + 8; p.x = Math.random() * w; }
+      if (p.x < -8) p.x = w + 8;
+      if (p.x > w + 8) p.x = -8;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.ac ? colors.accent : colors.ink;
+      ctx.globalAlpha = p.a;
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    raf = requestAnimationFrame(tick);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      cancelAnimationFrame(raf);
+    } else {
+      raf = requestAnimationFrame(tick);
+    }
+  });
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  }, { passive: true });
+  document.addEventListener('mouseleave', () => {
+    mouse.x = mouse.y = -9999;
+  });
+
+  window.Particles = { refresh };
+  refresh();
+  resize();
+  raf = requestAnimationFrame(tick);
+}
 
 // ---------- 主题 ----------
 function initTheme() {
@@ -43,6 +273,8 @@ function setTheme(theme, animate) {
   if (label) label.textContent = theme === 'dark' ? '昼' : '夜';
   const toggle = document.getElementById('themeToggle');
   if (toggle) toggle.setAttribute('aria-label', theme === 'dark' ? '切换到日间主题' : '切换到夜间主题');
+
+  if (window.Particles) window.Particles.refresh();
 
   // 同步 Giscus 主题
   const giscusFrame = document.querySelector('.giscus-comments iframe');
@@ -94,7 +326,7 @@ function initReveal() {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce || !('IntersectionObserver' in window)) return;
   const targets = document.querySelectorAll(
-    '.hero, .section-head, .post-row, .archive-year, .archive-row, ' +
+    '.section-head, .post-row, .archive-year, .archive-row, ' +
     '.about-section, .article-header, .article-body > *, .comments, .post-nav, .page-404 > *'
   );
 

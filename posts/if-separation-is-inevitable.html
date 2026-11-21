@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script>try{if(localStorage.getItem('dou-unlocked-v1'))document.documentElement.classList.remove('locked')}catch(e){}</script>
+  <script>try{var t=localStorage.getItem('dou-theme')||'light';document.documentElement.setAttribute('data-theme',t);var a=localStorage.getItem('dou-accent');if(a)document.documentElement.style.setProperty('--accent-user',a);if(localStorage.getItem('dou-unlocked-v1'))document.documentElement.classList.remove('locked')}catch(e){}</script>
   <title>如果注定要分离，那相遇的意义是什么？ - Dou's Space</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/feed.xml">

@@ -33,10 +33,13 @@ html {
   --ink-3: #938774;
   --rule: rgba(38, 32, 25, 0.16);
   --rule-soft: rgba(38, 32, 25, 0.08);
-  --accent: #b23a2b;
-  --accent-ink: #8f2c1f;
-  --accent-soft: rgba(178, 58, 43, 0.07);
+  --accent-user: #b23a2b;
+  --accent: var(--accent-user);
+  --accent-ink: color-mix(in oklab, var(--accent) 76%, var(--ink));
+  --accent-soft: color-mix(in oklab, var(--accent) 8%, transparent);
+  --on-accent: #f8f4ea;
   --shadow-stamp: 1px 2px 0 rgba(38, 32, 25, 0.18);
+  --seal-rot: -3deg;
 
   --font-serif: 'Fraunces', 'Songti SC', 'Noto Serif CJK SC', 'Source Han Serif SC', 'STSong', 'SimSun', serif;
   --font-ui: 'Fraunces', -apple-system, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
@@ -60,9 +63,9 @@ html {
   --ink-3: #7d7261;
   --rule: rgba(236, 226, 207, 0.16);
   --rule-soft: rgba(236, 226, 207, 0.08);
-  --accent: #e07a63;
-  --accent-ink: #eb8f7a;
-  --accent-soft: rgba(224, 122, 99, 0.09);
+  --accent: color-mix(in oklab, var(--accent-user) 85%, oklch(0.88 0.06 75));
+  --accent-ink: color-mix(in oklab, var(--accent) 78%, var(--ink));
+  --accent-soft: color-mix(in oklab, var(--accent) 9%, transparent);
   --shadow-stamp: 1px 2px 0 rgba(0, 0, 0, 0.45);
 
   --grain-opacity: 0.06;
@@ -105,7 +108,7 @@ a:hover { color: var(--accent); }
 
 ::selection {
   background: var(--accent);
-  color: var(--paper);
+  color: var(--on-accent);
 }
 
 :focus-visible {
@@ -158,21 +161,29 @@ a:hover { color: var(--accent); }
   height: 2.15rem;
   flex: none;
   background: var(--accent);
-  color: var(--paper);
+  color: var(--on-accent);
   font-family: var(--font-serif);
   font-weight: 620;
   font-size: 1.2rem;
   line-height: 1;
   border-radius: var(--r);
-  transform: rotate(-3deg);
+  transform: rotate(var(--seal-rot));
   box-shadow: var(--shadow-stamp);
+  animation: stamp-in 0.7s cubic-bezier(0.2, 0.9, 0.25, 1) both;
 }
 .seal-lg {
+  --seal-rot: -4deg;
   width: 3.8rem;
   height: 3.8rem;
   font-size: 2.15rem;
-  transform: rotate(-4deg);
   margin-inline: auto;
+  animation-delay: 0.12s;
+}
+
+@keyframes stamp-in {
+  0% { opacity: 0; transform: rotate(-16deg) scale(1.65); }
+  55% { opacity: 1; transform: rotate(var(--seal-rot)) scale(0.94); }
+  100% { opacity: 1; transform: rotate(var(--seal-rot)) scale(1); }
 }
 
 .nav-menu {
@@ -207,6 +218,7 @@ a:hover { color: var(--accent); }
 .nav-link.active { color: var(--ink); }
 
 .nav-actions {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.9rem;
@@ -227,6 +239,119 @@ a:hover { color: var(--accent); }
 .theme-toggle:hover {
   color: var(--accent);
   border-color: var(--accent);
+}
+
+/* ---------- 调色面板 ---------- */
+.palette-toggle {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  color: var(--ink-2);
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: 0.42rem 0.72rem;
+  cursor: pointer;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+.palette-toggle:hover,
+.palette-toggle.open {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.palette {
+  position: absolute;
+  top: calc(100% + 0.85rem);
+  right: 0;
+  z-index: 130;
+  width: 15.5rem;
+  padding: 1.15rem 1.25rem 1.25rem;
+  background: var(--paper-hi);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  box-shadow: 0 16px 44px rgba(20, 14, 8, 0.16);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity 0.3s ease, transform 0.3s var(--ease-out), visibility 0.3s ease;
+}
+.palette.open {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+.palette-title {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  letter-spacing: 0.24em;
+  color: var(--ink-3);
+  margin-bottom: 1rem;
+}
+.palette-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.78rem;
+}
+.swatch {
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.25s var(--ease-out);
+}
+.swatch:hover { transform: scale(1.14); }
+.swatch.active {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.palette-custom {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: 1.15rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--rule-soft);
+}
+.palette-custom input[type="color"] {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+.palette-custom input[type="color"]::-webkit-color-swatch-wrapper { padding: 3px; }
+.palette-custom input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 1px; }
+.palette-label {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  color: var(--ink-2);
+  margin-right: auto;
+}
+.palette-reset {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  color: var(--ink-3);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.palette-reset:hover { color: var(--accent); }
+
+/* ---------- 墨尘粒子 ---------- */
+.ink-particles {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .hamburger {
@@ -261,6 +386,7 @@ a:hover { color: var(--accent); }
   letter-spacing: 0.22em;
   color: var(--ink-2);
   margin-bottom: clamp(1.5rem, 3.5vw, 2.35rem);
+  animation: fade-up 0.9s cubic-bezier(0.19, 1, 0.22, 1) both;
 }
 .hero-title {
   font-family: var(--font-serif);
@@ -270,10 +396,28 @@ a:hover { color: var(--accent); }
   letter-spacing: -0.015em;
   font-variation-settings: "WONK" 1, "SOFT" 20;
 }
-.hero-title-line2 {
+.hero-mline {
   display: block;
+  overflow: hidden;
+  padding-bottom: 0.09em;
+}
+.hero-mline + .hero-mline {
   margin-left: clamp(1.5rem, 8vw, 6.5rem);
   color: var(--accent);
+}
+.hero-mtext {
+  display: inline-block;
+  transform: translateY(115%);
+  animation: ml-rise 1.05s cubic-bezier(0.19, 1, 0.22, 1) both;
+}
+.hero-mline:nth-child(2) .hero-mtext { animation-delay: 0.18s; }
+
+@keyframes ml-rise {
+  to { transform: translateY(0); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
 }
 .hero-tagline {
   margin-top: clamp(1.6rem, 3.5vw, 2.3rem);
@@ -281,6 +425,7 @@ a:hover { color: var(--accent); }
   color: var(--ink-2);
   letter-spacing: 0.06em;
   min-height: 1.6em;
+  animation: fade-up 0.9s 0.55s cubic-bezier(0.19, 1, 0.22, 1) both;
 }
 .typing-cursor {
   display: inline-block;
@@ -298,6 +443,7 @@ a:hover { color: var(--accent); }
   padding-left: 1.35rem;
   border-left: 2px solid var(--accent);
   max-width: 34em;
+  animation: fade-up 0.9s 0.75s cubic-bezier(0.19, 1, 0.22, 1) both;
 }
 .hero-quote p {
   font-family: var(--font-serif);
@@ -314,6 +460,7 @@ a:hover { color: var(--accent); }
   font-size: 0.84rem;
   letter-spacing: 0.18em;
   color: var(--ink-3);
+  animation: fade-up 0.9s 0.9s cubic-bezier(0.19, 1, 0.22, 1) both;
 }
 .hero-stats b {
   font-family: var(--font-serif);
@@ -657,12 +804,13 @@ a:hover { color: var(--accent); }
   border-radius: var(--r);
   text-decoration: none;
   color: inherit;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.35s var(--ease-out);
 }
 .post-nav-link:hover {
   background: var(--accent-soft);
   border-color: color-mix(in srgb, var(--accent) 40%, transparent);
   color: inherit;
+  transform: translateY(-2px);
 }
 .post-nav-link.next { text-align: right; }
 .post-nav-label {
@@ -852,7 +1000,7 @@ html.gate-ready body {
 .lock-input:focus { border-color: var(--accent); outline: none; }
 .lock-btn {
   background: var(--accent);
-  color: var(--paper);
+  color: var(--on-accent);
   border: 0;
   border-radius: var(--r);
   padding: 0.88rem 1.75rem;
@@ -894,7 +1042,7 @@ html.gate-ready body {
   padding: 1rem;
   text-align: center;
   background: var(--accent);
-  color: var(--paper);
+  color: var(--on-accent);
   font-family: var(--font-ui);
   font-size: 0.88rem;
   letter-spacing: 0.1em;
@@ -956,10 +1104,12 @@ html.gate-ready body {
   html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
   .reveal { opacity: 1; transform: none; }
+  .hero-mtext { transform: none; }
 }
 
 /* ---------- 打印 ---------- */

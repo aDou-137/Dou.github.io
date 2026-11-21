@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script>try{if(localStorage.getItem('dou-unlocked-v1'))document.documentElement.classList.remove('locked')}catch(e){}</script>
+  <script>try{var t=localStorage.getItem('dou-theme')||'light';document.documentElement.setAttribute('data-theme',t);var a=localStorage.getItem('dou-accent');if(a)document.documentElement.style.setProperty('--accent-user',a);if(localStorage.getItem('dou-unlocked-v1'))document.documentElement.classList.remove('locked')}catch(e){}</script>
   <title>Dou's Space</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/feed.xml">
@@ -39,7 +39,10 @@
   <main class="wrap">
     <section class="hero">
       <p class="hero-kicker"><span id="greeting">欢迎</span><span class="dot">·</span><span id="heroDate"></span></p>
-      <h1 class="hero-title">Dou's<span class="hero-title-line2">Space</span></h1>
+      <h1 class="hero-title">
+        <span class="hero-mline"><span class="hero-mtext">Dou's</span></span>
+        <span class="hero-mline"><span class="hero-mtext">Space</span></span>
+      </h1>
       <p class="hero-tagline"><span id="heroTagline">用文字记录生活，用思考丈量世界。</span></p>
       <blockquote class="hero-quote"><p id="heroQuote">生活不是等待暴风雨过去，而是学会在雨中翩翩起舞。</p></blockquote>
       <p class="hero-stats"><b id="postCount">04</b>篇文字<span class="dot">·</span><b>∞</b>次相遇</p>
