@@ -1,59 +1,52 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="locked">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>try{if(localStorage.getItem('dou-unlocked-v1'))document.documentElement.classList.remove('locked')}catch(e){}</script>
   <title>上岸了 - Dou's Space</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/feed.xml">
   <meta name="description" content="所有的坚持，终于有了回响。">
   <meta property="og:title" content="上岸了">
   <meta property="og:description" content="所有的坚持，终于有了回响。">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://zhzxyw.space/posts/congratulations">
+  <meta property="og:site_name" content="Dou's Space">
   <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <!-- Background -->
-  <div class="bg-wrapper">
-    <div class="bg-image"></div>
-    <div class="bg-gradient"></div>
-    <div class="floating-orbs">
-      <div class="orb orb-1"></div>
-      <div class="orb orb-2"></div>
-      <div class="orb orb-3"></div>
-    </div>
-  </div>
-
-  <!-- Navigation -->
-  <nav class="nav glass">
-    <a href="/" class="nav-logo">✦ Dou's Space</a>
-    <div class="nav-right">
-      <div class="nav-links" id="navLinks">
-        <a href="/" class="nav-link">首页</a>
-        <a href="/archive" class="nav-link">归档</a>
-        <a href="/about" class="nav-link">关于</a>
-      </div>
-      <button class="theme-toggle" aria-label="切换主题">
-        <span class="theme-toggle-icon">🌙</span>
+  <header class="site-nav" id="siteNav">
+    <a class="brand" href="/">
+      <span class="brand-seal" aria-hidden="true">D</span>
+      <span class="brand-name">Dou's Space</span>
+    </a>
+    <nav class="nav-menu" id="navMenu">
+        <a class="nav-link" href="/">首页</a>
+        <a class="nav-link" href="/archive">归档</a>
+        <a class="nav-link" href="/about">关于</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+        <span class="theme-toggle-label">夜</span>
       </button>
-      <button class="hamburger" id="hamburger" aria-label="菜单">
-        <span></span><span></span><span></span>
+      <button class="hamburger" id="hamburger" aria-label="菜单" aria-expanded="false">
+        <span></span><span></span>
       </button>
     </div>
-  </nav>
-  <div class="nav-overlay" id="navOverlay"></div>
-
-  <!-- Article -->
-  <main class="container article-page">
-    <article class="article-full glass-card">
-      <div class="article-header">
-        <div class="article-meta">
-          <span class="article-date">2026-06-22</span>
-          <span class="article-tag">随笔</span>
-        </div>
-        <h1 class="article-full-title">上岸了</h1>
-      </div>
+  </header>
+  <main class="wrap">
+    <a class="back-link" href="/">← 返回首页</a>
+    <article class="article">
+      <header class="article-header">
+        <p class="article-meta">
+          <time datetime="2026-06-22">2026-06-22</time>
+          <span class="dot">·</span><span>随笔</span>
+          <span class="dot">·</span><span id="readingTime">1 分钟阅读</span>
+        </p>
+        <h1 class="article-title">上岸了</h1>
+      </header>
 
       <div class="article-body">
         <p class="article-lead">所有的坚持，终于有了回响。</p>
@@ -65,14 +58,13 @@
         <p>查到结果的那一刻，没有想象中的大哭大笑，反而很平静。只是长长地舒了一口气，心里默默说了一句：<strong>终于。</strong></p>
 
         <p>感谢那个没有放弃的自己。</p>
-
-        <p class="article-end">— End —</p>
       </div>
+
+      <p class="article-end">— End —</p>
     </article>
 
-    <!-- Comments -->
-    <section class="comments-section glass-card">
-      <h2 class="comments-title">💬 评论区</h2>
+    <section class="comments">
+      <h2 class="comments-title">评论</h2>
       <div class="giscus-comments">
         <script src="https://giscus.app/client.js"
           data-repo="aDou-137/Dou.github.io"
@@ -92,28 +84,27 @@
       </div>
     </section>
 
-    <!-- Prev/Next -->
     <nav class="post-nav">
-      <a href="/posts/not-letting-go-of-them" class="post-nav-link prev">
-        <span class="post-nav-label">← 上一篇</span>
+      <a class="post-nav-link prev" href="/posts/not-letting-go-of-them">
+        <span class="post-nav-label">上一篇</span>
         <span class="post-nav-title">不是放不下ta，是放不下那段满心欢喜的自己</span>
       </a>
-      <span class="post-nav-link next" style="opacity:0.3;pointer-events:none;">
+      <span class="post-nav-link next disabled">
         <span class="post-nav-label">已是最新</span>
       </span>
     </nav>
-
-    <!-- Back -->
-    <div class="back-link">
-      <a href="/" class="back-button glass">← 返回首页</a>
-    </div>
   </main>
-
-  <!-- Footer -->
-  <footer class="footer glass">
-    <p>&copy; 2026 Dou's Space · Powered by GitHub Pages</p>
+  <footer class="site-footer">
+    <p class="footer-copy">© 2026 Dou's Space</p>
+    <p class="footer-links">
+      <a href="/feed.xml">RSS</a>
+      <a href="https://github.com/aDou-137" target="_blank" rel="noopener">GitHub</a>
+      <button class="footer-lock" data-lock-btn>锁定本站</button>
+    </p>
+    <p class="footer-note">Powered by GitHub Pages</p>
   </footer>
-
+  <noscript><div class="nojs-note">本站需要启用 JavaScript 并输入访问密码。</div></noscript>
+  <script src="/lock.js"></script>
   <script src="/script.js"></script>
 </body>
 </html>

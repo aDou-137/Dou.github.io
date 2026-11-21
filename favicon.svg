@@ -1,10 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#a78bfa"/>
-      <stop offset="100%" stop-color="#f0abfc"/>
-    </linearGradient>
-  </defs>
-  <rect width="64" height="64" rx="14" fill="#0a0a1e"/>
-  <text x="32" y="44" text-anchor="middle" font-family="Georgia,serif" font-size="36" font-weight="700" fill="url(#g)">D</text>
+  <rect x="2" y="2" width="60" height="60" rx="6" fill="#b23a2b"/>
+  <rect x="7" y="7" width="50" height="50" rx="3" fill="none" stroke="#f2ede2" stroke-width="2.5" opacity="0.85"/>
+  <text x="32" y="45" text-anchor="middle" font-family="Georgia, 'Songti SC', serif" font-size="34" font-weight="600" fill="#f2ede2">D</text>
 </svg>

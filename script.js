@@ -1,38 +1,33 @@
 // ============================================
-// Dou's Space - Liquid Glass Interactions
+// Dou's Space — 纸上墨 交互
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
-  initScrollAnimations();
-  initNavbar();
+  initNavScroll();
+  initHamburger();
+  initReveal();
   initPageTransitions();
-  initLiquidShimmer();
+  initGreeting();
+  initHeroQuote();
+  initTypingEffect();
+  initPostCount();
+  initPostIndex();
+  initReadingTime();
   initReadingProgress();
   initBackToTop();
-  initDynamicGreeting();
-  initReadingTime();
-  initHamburgerMenu();
-  initScrollIndicator();
-  initTypingEffect();
-  initHeroQuote();
 });
 
-// ============================================
-// Theme Toggle
-// ============================================
+// ---------- 主题 ----------
 function initTheme() {
-  const toggle = document.querySelector('.theme-toggle');
+  const toggle = document.getElementById('themeToggle');
+  const saved = localStorage.getItem('dou-theme') || 'light';
+  setTheme(saved, false);
   if (!toggle) return;
 
-  // Load saved theme or default to dark
-  const saved = localStorage.getItem('dou-theme') || 'dark';
-  setTheme(saved, false);
-
   toggle.addEventListener('click', () => {
-    const current = document.documentElement.getAttribute('data-theme') || 'dark';
-    const next = current === 'dark' ? 'light' : 'dark';
-    setTheme(next, true);
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    setTheme(current === 'dark' ? 'light' : 'dark', true);
   });
 }
 
@@ -41,19 +36,17 @@ function setTheme(theme, animate) {
     document.documentElement.classList.add('theme-transitioning');
     setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 600);
   }
-
   document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('dou-theme', theme);
+  try { localStorage.setItem('dou-theme', theme); } catch (e) {}
 
-  // Update toggle icon
-  const icon = document.querySelector('.theme-toggle-icon');
-  if (icon) {
-    icon.textContent = theme === 'dark' ? '🌙' : '☀️';
-  }
+  const label = document.querySelector('.theme-toggle-label');
+  if (label) label.textContent = theme === 'dark' ? '昼' : '夜';
+  const toggle = document.getElementById('themeToggle');
+  if (toggle) toggle.setAttribute('aria-label', theme === 'dark' ? '切换到日间主题' : '切换到夜间主题');
 
-  // Update Giscus theme if present
+  // 同步 Giscus 主题
   const giscusFrame = document.querySelector('.giscus-comments iframe');
-  if (giscusFrame) {
+  if (giscusFrame && giscusFrame.contentWindow) {
     giscusFrame.contentWindow.postMessage(
       { giscus: { setConfig: { theme: theme === 'dark' ? 'dark' : 'light' } } },
       'https://giscus.app'
@@ -61,10 +54,50 @@ function setTheme(theme, animate) {
   }
 }
 
-// ============================================
-// Scroll Animations
-// ============================================
-function initScrollAnimations() {
+// ---------- 导航滚动状态 ----------
+function initNavScroll() {
+  const nav = document.getElementById('siteNav');
+  if (!nav) return;
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+// ---------- 移动端菜单 ----------
+function initHamburger() {
+  const hamburger = document.getElementById('hamburger');
+  const menu = document.getElementById('navMenu');
+  if (!hamburger || !menu) return;
+
+  const toggleMenu = (open) => {
+    const isOpen = open !== undefined ? open : !menu.classList.contains('open');
+    menu.classList.toggle('open', isOpen);
+    hamburger.classList.toggle('active', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+  };
+
+  hamburger.addEventListener('click', () => toggleMenu());
+  menu.querySelectorAll('.nav-link').forEach(link =>
+    link.addEventListener('click', () => toggleMenu(false))
+  );
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') toggleMenu(false);
+  });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 720) toggleMenu(false);
+  });
+}
+
+// ---------- 入场动画 ----------
+function initReveal() {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !('IntersectionObserver' in window)) return;
+  const targets = document.querySelectorAll(
+    '.hero, .section-head, .post-row, .archive-year, .archive-row, ' +
+    '.about-section, .article-header, .article-body > *, .comments, .post-nav, .page-404 > *'
+  );
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -72,407 +105,64 @@ function initScrollAnimations() {
         observer.unobserve(entry.target);
       }
     });
-  }, {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
-  const animateElements = document.querySelectorAll(
-    '.article-card, .section-header, .about-card, .timeline, .comments-section'
-  );
-
-  animateElements.forEach((el, i) => {
-    el.classList.add('fade-in');
-    el.style.transitionDelay = `${i * 0.1}s`;
+  let groupIndex = 0;
+  let lastParent = null;
+  targets.forEach((el) => {
+    el.classList.add('reveal');
+    // 同一组内的元素做轻微错落
+    const parent = el.parentElement;
+    if (parent !== lastParent) { groupIndex = 0; lastParent = parent; }
+    el.style.transitionDelay = `${Math.min(groupIndex * 0.07, 0.42)}s`;
+    groupIndex++;
     observer.observe(el);
   });
 }
 
-// ============================================
-// Navbar
-// ============================================
-function initNavbar() {
-  const nav = document.querySelector('.nav');
-  let lastScroll = 0;
-
-  window.addEventListener('scroll', () => {
-    const currentScroll = window.scrollY;
-    const isDark = !document.documentElement.getAttribute('data-theme') ||
-                   document.documentElement.getAttribute('data-theme') === 'dark';
-
-    if (currentScroll > 50) {
-      nav.style.background = isDark
-        ? 'rgba(10, 10, 25, 0.85)'
-        : 'rgba(255, 255, 255, 0.7)';
-      nav.style.borderBottomColor = isDark
-        ? 'rgba(255, 255, 255, 0.1)'
-        : 'rgba(0, 0, 0, 0.08)';
-    } else {
-      nav.style.background = '';
-      nav.style.borderBottomColor = '';
-    }
-
-    lastScroll = currentScroll;
-  }, { passive: true });
-}
-
-// ============================================
-// Page Transitions
-// ============================================
+// ---------- 页面过渡 ----------
 function initPageTransitions() {
-  document.body.style.opacity = '0';
-  document.body.style.transition = 'opacity 0.4s ease';
-
   requestAnimationFrame(() => {
     document.body.style.opacity = '1';
   });
 
   document.querySelectorAll('a[href]').forEach(link => {
     const href = link.getAttribute('href');
-    if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto:')) return;
-    // Skip links that are handled by card click
-    if (link.closest('.article-card[data-href]') && link.classList.contains('read-more')) return;
+    if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto:') || link.target === '_blank') return;
 
     link.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       e.preventDefault();
       document.body.style.opacity = '0';
-      setTimeout(() => {
-        window.location.href = href;
-      }, 300);
+      window.setTimeout(() => { window.location.href = href; }, 260);
     });
   });
 }
 
-// ============================================
-// Liquid Glass - Dynamic Shimmer on Mouse Move
-// ============================================
-function initLiquidShimmer() {
-  const cards = document.querySelectorAll('.glass-card');
-
-  cards.forEach(card => {
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-      // Move the refraction highlight to follow cursor
-      const afterEl = card.querySelector(':after') || card;
-      card.style.setProperty('--shimmer-x', `${x}%`);
-      card.style.setProperty('--shimmer-y', `${y}%`);
-    });
-  });
-
-  // Add dynamic shimmer CSS
-  const style = document.createElement('style');
-  style.textContent = `
-    .glass-card::after {
-      background: radial-gradient(
-        ellipse at var(--shimmer-x, 30%) var(--shimmer-y, 20%),
-        rgba(255, 255, 255, 0.05) 0%,
-        transparent 50%
-      ) !important;
-    }
-  `;
-  document.head.appendChild(style);
-}
-
-// ============================================
-// Reading Progress Bar
-// ============================================
-function initReadingProgress() {
-  const articleBody = document.querySelector('.article-body');
-  if (!articleBody) return;
-
-  const progressBar = document.createElement('div');
-  progressBar.className = 'reading-progress';
-  document.body.appendChild(progressBar);
-
-  window.addEventListener('scroll', () => {
-    const rect = articleBody.getBoundingClientRect();
-    const articleTop = rect.top + window.scrollY;
-    const articleHeight = articleBody.offsetHeight;
-    const windowHeight = window.innerHeight;
-    const scrolled = window.scrollY - articleTop + windowHeight * 0.3;
-    const progress = Math.min(Math.max(scrolled / articleHeight * 100, 0), 100);
-    progressBar.style.width = progress + '%';
-  }, { passive: true });
-}
-
-// ============================================
-// Back to Top Button
-// ============================================
-function initBackToTop() {
-  const btn = document.createElement('button');
-  btn.className = 'back-to-top';
-  btn.innerHTML = '↑';
-  btn.setAttribute('aria-label', '回到顶部');
-  document.body.appendChild(btn);
-
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 400) {
-      btn.classList.add('visible');
-    } else {
-      btn.classList.remove('visible');
-    }
-  }, { passive: true });
-
-  btn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-}
-
-// ============================================
-// Dynamic Greeting (Hero Section)
-// ============================================
-function initDynamicGreeting() {
-  const heroDate = document.querySelector('.hero-date');
-  if (!heroDate) return;
-
+// ---------- 问候语 + 日期 ----------
+function initGreeting() {
+  const el = document.getElementById('greeting');
+  if (!el) return;
   const hour = new Date().getHours();
-  let greeting, emoji;
+  const map = [
+    [0, 5, '夜深了'], [5, 9, '早安'], [9, 12, '上午好'],
+    [12, 14, '午安'], [14, 18, '下午好'], [18, 24, '晚上好'],
+  ];
+  const hit = map.find(([a, b]) => hour >= a && hour < b);
+  el.textContent = hit ? hit[2] : '欢迎';
 
-  if (hour >= 5 && hour < 9) {
-    greeting = '早安';
-    emoji = '🌅';
-  } else if (hour >= 9 && hour < 12) {
-    greeting = '上午好';
-    emoji = '☀️';
-  } else if (hour >= 12 && hour < 14) {
-    greeting = '午安';
-    emoji = '🌤️';
-  } else if (hour >= 14 && hour < 18) {
-    greeting = '下午好';
-    emoji = '🌇';
-  } else if (hour >= 18 && hour < 22) {
-    greeting = '晚上好';
-    emoji = '🌙';
-  } else {
-    greeting = '夜深了';
-    emoji = '✨';
-  }
-
-  heroDate.innerHTML = `<span class="greeting-emoji">${emoji}</span> ${greeting}`;
-}
-
-// ============================================
-// Estimated Reading Time
-// ============================================
-function initReadingTime() {
-  const articleBody = document.querySelector('.article-body');
-  if (!articleBody) return;
-
-  // Count Chinese characters + English words
-  const text = articleBody.textContent || '';
-  const chineseChars = (text.match(/[\u4e00-\u9fff]/g) || []).length;
-  const englishWords = (text.replace(/[\u4e00-\u9fff]/g, ' ').match(/[a-zA-Z]+/g) || []).length;
-  const totalWords = chineseChars + englishWords;
-  const readingTime = Math.max(1, Math.ceil(totalWords / 400)); // ~400 words per minute
-
-  // Insert reading time into article meta
-  const articleMeta = document.querySelector('.article-header .article-meta');
-  if (articleMeta) {
-    const timeSpan = document.createElement('span');
-    timeSpan.className = 'reading-time';
-    timeSpan.textContent = `${readingTime} 分钟阅读`;
-    articleMeta.appendChild(timeSpan);
+  const dateEl = document.getElementById('heroDate');
+  if (dateEl) {
+    const d = new Date();
+    const week = ['日', '一', '二', '三', '四', '五', '六'][d.getDay()];
+    dateEl.textContent = `${d.getFullYear()} 年 ${d.getMonth() + 1} 月 ${d.getDate()} 日 · 星期${week}`;
   }
 }
 
-// ============================================
-// Article Card Click-to-Navigate
-// First click: reveal "阅读全文" button
-// Second click (on button): navigate to article
-// ============================================
-function initArticleCards() {
-  document.querySelectorAll('.article-card[data-href]').forEach(card => {
-    card.addEventListener('click', (e) => {
-      // If clicking on the read-more link, let it navigate naturally
-      if (e.target.closest('.read-more')) return;
-
-      // If card already activated, allow click-through to title link
-      if (card.classList.contains('card-activated')) {
-        const titleLink = card.querySelector('.article-title a');
-        if (titleLink && !e.target.closest('a')) {
-          e.preventDefault();
-          document.body.style.opacity = '0';
-          setTimeout(() => {
-            window.location.href = card.getAttribute('data-href');
-          }, 300);
-        }
-        return;
-      }
-
-      // First click: activate card, show read-more button
-      e.preventDefault();
-      e.stopPropagation();
-      card.classList.add('card-activated');
-
-      // Remove activation from other cards
-      document.querySelectorAll('.article-card.card-activated').forEach(other => {
-        if (other !== card) other.classList.remove('card-activated');
-      });
-    });
-  });
-
-  // Click outside to deactivate
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.article-card')) {
-      document.querySelectorAll('.article-card.card-activated').forEach(card => {
-        card.classList.remove('card-activated');
-      });
-    }
-  });
-}
-
-// Initialize on DOMContentLoaded
-document.addEventListener('DOMContentLoaded', initArticleCards);
-
-// ============================================
-// Click Ripple (subtle)
-// ============================================
-document.addEventListener('click', (e) => {
-  createRipple(e.clientX, e.clientY);
-});
-
-function createRipple(x, y) {
-  const ripple = document.createElement('div');
-  const isDark = !document.documentElement.getAttribute('data-theme') ||
-                 document.documentElement.getAttribute('data-theme') === 'dark';
-  const color = isDark
-    ? 'rgba(167, 139, 250, 0.4)'
-    : 'rgba(124, 58, 237, 0.25)';
-
-  ripple.style.cssText = `
-    position: fixed;
-    left: ${x}px;
-    top: ${y}px;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: ${color};
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    animation: ripple-out 0.6s ease-out forwards;
-  `;
-  document.body.appendChild(ripple);
-  setTimeout(() => ripple.remove(), 600);
-}
-
-// Ripple animation
-const rippleStyle = document.createElement('style');
-rippleStyle.textContent = `
-  @keyframes ripple-out {
-    to {
-      width: 80px;
-      height: 80px;
-      opacity: 0;
-    }
-  }
-`;
-document.head.appendChild(rippleStyle);
-
-// ============================================
-// Hamburger Menu (Mobile)
-// ============================================
-function initHamburgerMenu() {
-  const hamburger = document.getElementById('hamburger');
-  const navLinks = document.getElementById('navLinks');
-  const overlay = document.getElementById('navOverlay');
-  if (!hamburger || !navLinks) return;
-
-  function toggleMenu(open) {
-    const isOpen = open !== undefined ? open : !navLinks.classList.contains('open');
-    navLinks.classList.toggle('open', isOpen);
-    hamburger.classList.toggle('active', isOpen);
-    if (overlay) overlay.classList.toggle('open', isOpen);
-    document.body.style.overflow = isOpen ? 'hidden' : '';
-  }
-
-  hamburger.addEventListener('click', () => toggleMenu());
-  if (overlay) overlay.addEventListener('click', () => toggleMenu(false));
-
-  // Close on nav link click
-  navLinks.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => toggleMenu(false));
-  });
-
-  // Close on Escape
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') toggleMenu(false);
-  });
-
-  // Close on resize to desktop
-  window.addEventListener('resize', () => {
-    if (window.innerWidth > 768) toggleMenu(false);
-  });
-}
-
-// ============================================
-// Scroll Indicator (Hero)
-// ============================================
-function initScrollIndicator() {
-  const indicator = document.getElementById('scrollIndicator');
-  if (!indicator) return;
-
-  indicator.addEventListener('click', () => {
-    const articlesSection = document.querySelector('.container');
-    if (articlesSection) {
-      articlesSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  });
-
-  // Hide on scroll
-  window.addEventListener('scroll', () => {
-    indicator.style.opacity = window.scrollY > 100 ? '0' : '';
-    indicator.style.pointerEvents = window.scrollY > 100 ? 'none' : '';
-  }, { passive: true });
-}
-
-// ============================================
-// Typing Effect (Hero Subtitle)
-// ============================================
-function initTypingEffect() {
-  const subtitle = document.querySelector('.hero-subtitle');
-  if (!subtitle) return;
-
-  const fullText = subtitle.textContent.trim();
-  subtitle.textContent = '';
-  const cursor = document.createElement('span');
-  cursor.className = 'typing-cursor';
-  subtitle.appendChild(cursor);
-
-  let i = 0;
-  const speed = 80; // ms per character
-
-  function typeNext() {
-    if (i < fullText.length) {
-      // Insert char before cursor
-      const charNode = document.createTextNode(fullText.charAt(i));
-      subtitle.insertBefore(charNode, cursor);
-      i++;
-      setTimeout(typeNext, speed + Math.random() * 40);
-    } else {
-      // Remove cursor after a delay
-      setTimeout(() => {
-        cursor.style.animation = 'none';
-        cursor.style.opacity = '0';
-        cursor.style.transition = 'opacity 0.5s ease';
-      }, 2000);
-    }
-  }
-
-  // Start typing after a short delay
-  setTimeout(typeNext, 600);
-}
-
-// ============================================
-// Hero Random Quote
-// ============================================
+// ---------- 随机一言 ----------
 function initHeroQuote() {
-  const quoteEl = document.getElementById('heroQuote');
-  if (!quoteEl) return;
-
+  const el = document.getElementById('heroQuote');
+  if (!el) return;
   const quotes = [
     '生活不是等待暴风雨过去，而是学会在雨中翩翩起舞。',
     '世界上只有一种英雄主义，就是认清生活的真相后依然热爱它。',
@@ -487,6 +177,100 @@ function initHeroQuote() {
     '日子很长，不必慌张。',
     '保持热爱，奔赴山海。',
   ];
+  el.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+}
 
-  quoteEl.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+// ---------- 打字机 ----------
+function initTypingEffect() {
+  const el = document.getElementById('heroTagline');
+  if (!el) return;
+  const fullText = el.textContent.trim();
+  el.textContent = '';
+  const cursor = document.createElement('span');
+  cursor.className = 'typing-cursor';
+  el.appendChild(cursor);
+
+  let i = 0;
+  const speed = 75;
+  const typeNext = () => {
+    if (i < fullText.length) {
+      el.insertBefore(document.createTextNode(fullText.charAt(i)), cursor);
+      i++;
+      setTimeout(typeNext, speed + Math.random() * 35);
+    } else {
+      setTimeout(() => {
+        cursor.style.animation = 'none';
+        cursor.style.opacity = '0';
+        cursor.style.transition = 'opacity 0.5s ease';
+      }, 2200);
+    }
+  };
+  setTimeout(typeNext, 550);
+}
+
+// ---------- 文章计数 / 序号 ----------
+function initPostCount() {
+  const el = document.getElementById('postCount');
+  if (!el) return;
+  const count = document.querySelectorAll('.post-row').length;
+  if (count) el.textContent = String(count).padStart(2, '0');
+}
+
+function initPostIndex() {
+  document.querySelectorAll('.post-rows .post-row').forEach((row, i) => {
+    const index = document.createElement('span');
+    index.className = 'post-index';
+    index.setAttribute('aria-hidden', 'true');
+    index.textContent = String(i + 1).padStart(2, '0');
+    row.prepend(index);
+  });
+}
+
+// ---------- 阅读时间 ----------
+function initReadingTime() {
+  const body = document.querySelector('.article-body');
+  const target = document.getElementById('readingTime');
+  if (!body || !target) return;
+
+  const text = body.textContent || '';
+  const chineseChars = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+  const englishWords = (text.replace(/[\u4e00-\u9fff]/g, ' ').match(/[a-zA-Z]+/g) || []).length;
+  const minutes = Math.max(1, Math.ceil((chineseChars + englishWords) / 400));
+  target.textContent = `${minutes} 分钟阅读`;
+}
+
+// ---------- 阅读进度 ----------
+function initReadingProgress() {
+  const articleBody = document.querySelector('.article-body');
+  if (!articleBody) return;
+
+  const bar = document.createElement('div');
+  bar.className = 'reading-progress';
+  document.body.appendChild(bar);
+
+  window.addEventListener('scroll', () => {
+    const rect = articleBody.getBoundingClientRect();
+    const top = rect.top + window.scrollY;
+    const height = articleBody.offsetHeight;
+    const scrolled = window.scrollY - top + window.innerHeight * 0.3;
+    const progress = Math.min(Math.max(scrolled / height * 100, 0), 100);
+    bar.style.width = progress + '%';
+  }, { passive: true });
+}
+
+// ---------- 回到顶部 ----------
+function initBackToTop() {
+  const btn = document.createElement('button');
+  btn.className = 'back-to-top';
+  btn.innerHTML = '↑';
+  btn.setAttribute('aria-label', '回到顶部');
+  document.body.appendChild(btn);
+
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 500);
+  }, { passive: true });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 }

@@ -1,123 +1,98 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="locked">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>try{if(localStorage.getItem('dou-unlocked-v1'))document.documentElement.classList.remove('locked')}catch(e){}</script>
   <title>关于 - Dou's Space</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/feed.xml">
   <meta name="description" content="关于 Dou - 一个用文字记录生活的普通人。">
   <meta property="og:title" content="关于 - Dou's Space">
   <meta property="og:description" content="关于 Dou - 一个用文字记录生活的普通人。">
   <meta property="og:type" content="profile">
   <meta property="og:url" content="https://zhzxyw.space/about">
+  <meta property="og:site_name" content="Dou's Space">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <!-- Background -->
-  <div class="bg-wrapper">
-    <div class="bg-image"></div>
-    <div class="bg-gradient"></div>
-    <div class="floating-orbs">
-      <div class="orb orb-1"></div>
-      <div class="orb orb-2"></div>
-      <div class="orb orb-3"></div>
-    </div>
-  </div>
-
-  <!-- Navigation -->
-  <nav class="nav glass">
-    <a href="/" class="nav-logo">✦ Dou's Space</a>
-    <div class="nav-right">
-      <div class="nav-links" id="navLinks">
-        <a href="/" class="nav-link">首页</a>
-        <a href="/archive" class="nav-link">归档</a>
-        <a href="/about" class="nav-link active">关于</a>
-      </div>
-      <button class="theme-toggle" aria-label="切换主题">
-        <span class="theme-toggle-icon">🌙</span>
+  <header class="site-nav" id="siteNav">
+    <a class="brand" href="/">
+      <span class="brand-seal" aria-hidden="true">D</span>
+      <span class="brand-name">Dou's Space</span>
+    </a>
+    <nav class="nav-menu" id="navMenu">
+        <a class="nav-link" href="/">首页</a>
+        <a class="nav-link" href="/archive">归档</a>
+        <a class="nav-link active" href="/about">关于</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+        <span class="theme-toggle-label">夜</span>
       </button>
-      <button class="hamburger" id="hamburger" aria-label="菜单">
-        <span></span><span></span><span></span>
+      <button class="hamburger" id="hamburger" aria-label="菜单" aria-expanded="false">
+        <span></span><span></span>
       </button>
     </div>
-  </nav>
-  <div class="nav-overlay" id="navOverlay"></div>
+  </header>
+  <main class="wrap">
+    <header class="about-head">
+      <div class="brand-seal seal-lg" aria-hidden="true">D</div>
+      <h1 class="page-title">Dou</h1>
+      <p class="page-sub">一个用文字记录生活的普通人。</p>
+    </header>
 
-  <!-- About -->
-  <main class="container about-page">
-    <div class="about-card glass-card">
-      <div class="about-avatar">
-        <div class="avatar-ring">
-          <div class="avatar-placeholder">D</div>
-        </div>
-      </div>
-      <div class="about-content">
-        <h1 class="about-name">Dou</h1>
-        <p class="about-bio">一个用文字记录生活的普通人。</p>
+    <section class="about-section">
+      <h2>关于这个博客</h2>
+      <p>这里是 <strong>Dou's Space</strong>，一个用来记录想法和生活的小站。如果你有什么想说的，欢迎在这里留下足迹。</p>
+    </section>
 
-        <div class="about-divider"></div>
+    <section class="about-section">
+      <h2>兴趣</h2>
+      <p class="about-tags">
+        <span>阅读</span>
+        <span>写作</span>
+        <span>旅行</span>
+        <span>音乐</span>
+        <span>摄影</span>
+      </p>
+    </section>
 
-        <div class="about-section">
-          <h2 class="about-section-title">关于这个博客</h2>
-          <p>这里是 <strong>Dou's Space</strong>，一个用来记录想法和生活的小站。如果你有什么想说的，欢迎在这里留下足迹。</p>
-        </div>
+    <section class="about-section">
+      <h2>联系我</h2>
+      <p>如果你想聊聊天，可以通过以下方式找到我：</p>
+      <p class="about-links">
+        <a href="https://github.com/aDou-137" target="_blank" rel="noopener">GitHub →</a>
+        <a href="/feed.xml">RSS →</a>
+      </p>
+    </section>
 
-        <div class="about-section">
-          <h2 class="about-section-title">兴趣</h2>
-          <div class="about-tags">
-            <span class="about-tag">📖 阅读</span>
-            <span class="about-tag">✍️ 写作</span>
-            <span class="about-tag">✈️ 旅行</span>
-            <span class="about-tag">🎵 音乐</span>
-            <span class="about-tag">📷 摄影</span>
-          </div>
-        </div>
-
-        <div class="about-section">
-          <h2 class="about-section-title">联系我</h2>
-          <p class="about-contact">如果你想聊聊天，可以通过以下方式找到我：</p>
-          <div class="about-links">
-            <a href="https://github.com/aDou-137" target="_blank" class="about-link glass">
-              <span class="link-icon">🐙</span>
-              <span>GitHub</span>
-            </a>
-            <a href="/feed.xml" class="about-link glass">
-              <span class="link-icon">📡</span>
-              <span>RSS</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Timeline -->
-    <div class="timeline glass-card">
-      <h2 class="timeline-title">时间线</h2>
-      <div class="timeline-items">
-        <div class="timeline-item">
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <span class="timeline-date">2026年5月</span>
-            <p>建立了这个博客，开始记录生活</p>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <span class="timeline-date">未来</span>
-            <p>继续写下去，看看会发生什么 ✨</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <section class="about-section">
+      <h2>时间线</h2>
+      <ul class="timeline">
+        <li>
+          <time>2026 年 5 月</time>
+          <p>建立了这个博客，开始记录生活</p>
+        </li>
+        <li>
+          <time>未来</time>
+          <p>继续写下去，看看会发生什么 ✨</p>
+        </li>
+      </ul>
+    </section>
   </main>
-
-  <!-- Footer -->
-  <footer class="footer glass">
-    <p>&copy; 2026 Dou's Space · Powered by GitHub Pages</p>
+  <footer class="site-footer">
+    <p class="footer-copy">© 2026 Dou's Space</p>
+    <p class="footer-links">
+      <a href="/feed.xml">RSS</a>
+      <a href="https://github.com/aDou-137" target="_blank" rel="noopener">GitHub</a>
+      <button class="footer-lock" data-lock-btn>锁定本站</button>
+    </p>
+    <p class="footer-note">Powered by GitHub Pages</p>
   </footer>
-
-  <script src="script.js"></script>
+  <noscript><div class="nojs-note">本站需要启用 JavaScript 并输入访问密码。</div></noscript>
+  <script src="/lock.js"></script>
+  <script src="/script.js"></script>
 </body>
 </html>

@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="locked">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>try{if(localStorage.getItem('dou-unlocked-v1'))document.documentElement.classList.remove('locked')}catch(e){}</script>
   <title>Dou's Space</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/feed.xml">
@@ -13,132 +14,95 @@
   <meta property="og:url" content="https://zhzxyw.space/">
   <meta property="og:site_name" content="Dou's Space">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <!-- Background -->
-  <div class="bg-wrapper">
-    <div class="bg-image"></div>
-    <div class="bg-gradient"></div>
-    <div class="floating-orbs">
-      <div class="orb orb-1"></div>
-      <div class="orb orb-2"></div>
-      <div class="orb orb-3"></div>
-    </div>
-  </div>
-
-  <!-- Navigation -->
-  <nav class="nav glass">
-    <a href="/" class="nav-logo">✦ Dou's Space</a>
-    <div class="nav-right">
-      <div class="nav-links" id="navLinks">
-        <a href="/" class="nav-link active">首页</a>
-        <a href="/archive" class="nav-link">归档</a>
-        <a href="/about" class="nav-link">关于</a>
-      </div>
-      <button class="theme-toggle" aria-label="切换主题">
-        <span class="theme-toggle-icon">🌙</span>
+  <header class="site-nav" id="siteNav">
+    <a class="brand" href="/">
+      <span class="brand-seal" aria-hidden="true">D</span>
+      <span class="brand-name">Dou's Space</span>
+    </a>
+    <nav class="nav-menu" id="navMenu">
+        <a class="nav-link active" href="/">首页</a>
+        <a class="nav-link" href="/archive">归档</a>
+        <a class="nav-link" href="/about">关于</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+        <span class="theme-toggle-label">夜</span>
       </button>
-      <button class="hamburger" id="hamburger" aria-label="菜单">
-        <span></span><span></span><span></span>
+      <button class="hamburger" id="hamburger" aria-label="菜单" aria-expanded="false">
+        <span></span><span></span>
       </button>
-    </div>
-  </nav>
-  <div class="nav-overlay" id="navOverlay"></div>
-
-  <!-- Hero -->
-  <header class="hero">
-    <div class="hero-content glass-card">
-      <p class="hero-date hero-greeting">✦ Welcome</p>
-      <h1 class="hero-title">Dou's Space</h1>
-      <p class="hero-subtitle">用文字记录生活，用思考丈量世界。</p>
-      <p class="hero-quote" id="heroQuote"></p>
-      <div class="hero-stats">
-        <div class="stat">
-          <span class="stat-number">4</span>
-          <span class="stat-label">篇文章</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat">
-          <span class="stat-number">∞</span>
-          <span class="stat-label">次相遇</span>
-        </div>
-      </div>
-    </div>
-    <div class="scroll-indicator" id="scrollIndicator">
-      <span class="scroll-indicator-text">探索</span>
-      <div class="scroll-indicator-arrow"></div>
     </div>
   </header>
-
-  <!-- Articles -->
-  <main class="container">
-    <section class="section-header">
-      <h2 class="section-title">最近的文字</h2>
-      <div class="section-line"></div>
+  <main class="wrap">
+    <section class="hero">
+      <p class="hero-kicker"><span id="greeting">欢迎</span><span class="dot">·</span><span id="heroDate"></span></p>
+      <h1 class="hero-title">Dou's<span class="hero-title-line2">Space</span></h1>
+      <p class="hero-tagline"><span id="heroTagline">用文字记录生活，用思考丈量世界。</span></p>
+      <blockquote class="hero-quote"><p id="heroQuote">生活不是等待暴风雨过去，而是学会在雨中翩翩起舞。</p></blockquote>
+      <p class="hero-stats"><b id="postCount">04</b>篇文字<span class="dot">·</span><b>∞</b>次相遇</p>
     </section>
 
-    <div class="articles-grid">
-      <!-- new-post-insert -->
-
-      <article class="article-card glass-card" data-href="/posts/congratulations">
-        <div class="article-meta">
-          <span class="article-date">2026-06-22</span>
-          <span class="article-tag">随笔</span>
-          <span class="reading-time">📖 1 分钟</span>
-        </div>
-        <h3 class="article-title"><a href="/posts/congratulations">上岸了</a></h3>
-        <p class="article-excerpt">所有的坚持，终于有了回响。</p>
-        <div class="article-footer">
-          <a href="/posts/congratulations" class="read-more">阅读全文 →</a>
-        </div>
-      </article>
-      <article class="article-card glass-card" data-href="/posts/not-letting-go-of-them">
-        <div class="article-meta">
-          <span class="article-date">2026-05-25</span>
-          <span class="article-tag">随笔</span>
-          <span class="reading-time">📖 3 分钟</span>
-        </div>
-        <h3 class="article-title"><a href="/posts/not-letting-go-of-them">不是放不下ta，是放不下那段满心欢喜的自己</a></h3>
-        <p class="article-excerpt">你以为你在想念一个人，其实你在怀念一种状态——那个因为喜欢一个人而浑身发光的自己。</p>
-        <div class="article-footer">
-          <a href="/posts/not-letting-go-of-them" class="read-more">阅读全文 →</a>
-        </div>
-      </article>
-
-      <article class="article-card glass-card" data-href="/posts/if-separation-is-inevitable">
-        <div class="article-meta">
-          <span class="article-date">2026-05-23</span>
-          <span class="article-tag">随笔</span>
-          <span class="reading-time">📖 3 分钟</span>
-        </div>
-        <h3 class="article-title"><a href="/posts/if-separation-is-inevitable">如果注定要分离，那相遇的意义是什么？</a></h3>
-        <p class="article-excerpt">就像烟花注定会散，但那一刻，她确实照亮过你的世界。</p>
-        <div class="article-footer">
-          <a href="/posts/if-separation-is-inevitable" class="read-more">阅读全文 →</a>
-        </div>
-      </article>
-
-      <article class="article-card glass-card" data-href="/posts/hello-world">
-        <div class="article-meta">
-          <span class="article-date">2026-05-23</span>
-          <span class="article-tag">随笔</span>
-          <span class="reading-time">📖 1 分钟</span>
-        </div>
-        <h3 class="article-title"><a href="/posts/hello-world">你好，世界</a></h3>
-        <p class="article-excerpt">这是我的第一篇博客。新的开始，记录生活与思考。</p>
-        <div class="article-footer">
-          <a href="/posts/hello-world" class="read-more">阅读全文 →</a>
-        </div>
-      </article>
-    </div>
+    <section class="post-list">
+      <div class="section-head">
+        <h2 class="section-title">最近的文字</h2>
+        <span class="section-rule" aria-hidden="true"></span>
+        <a class="section-more" href="/archive">全部归档 →</a>
+      </div>
+      <div class="post-rows">
+        <!-- new-post-insert -->
+        <a class="post-row" href="/posts/congratulations">
+          <span class="post-date">2026-06-22</span>
+          <div class="post-main">
+            <h3 class="post-title">上岸了</h3>
+            <p class="post-excerpt">所有的坚持，终于有了回响。</p>
+            <p class="post-meta">随笔 · 1 分钟阅读</p>
+          </div>
+          <span class="post-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="post-row" href="/posts/not-letting-go-of-them">
+          <span class="post-date">2026-05-25</span>
+          <div class="post-main">
+            <h3 class="post-title">不是放不下ta，是放不下那段满心欢喜的自己</h3>
+            <p class="post-excerpt">你以为你在想念一个人，其实你在怀念一种状态——那个因为喜欢一个人而浑身发光的自己。</p>
+            <p class="post-meta">随笔 · 3 分钟阅读</p>
+          </div>
+          <span class="post-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="post-row" href="/posts/if-separation-is-inevitable">
+          <span class="post-date">2026-05-23</span>
+          <div class="post-main">
+            <h3 class="post-title">如果注定要分离，那相遇的意义是什么？</h3>
+            <p class="post-excerpt">就像烟花注定会散，但那一刻，她确实照亮过你的世界。</p>
+            <p class="post-meta">随笔 · 3 分钟阅读</p>
+          </div>
+          <span class="post-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="post-row" href="/posts/hello-world">
+          <span class="post-date">2026-05-23</span>
+          <div class="post-main">
+            <h3 class="post-title">你好，世界</h3>
+            <p class="post-excerpt">这是我的第一篇博客。新的开始，记录生活与思考。</p>
+            <p class="post-meta">随笔 · 1 分钟阅读</p>
+          </div>
+          <span class="post-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
   </main>
-
-  <!-- Footer -->
-  <footer class="footer glass">
-    <p>&copy; 2026 Dou's Space · Powered by GitHub Pages</p>
+  <footer class="site-footer">
+    <p class="footer-copy">© 2026 Dou's Space</p>
+    <p class="footer-links">
+      <a href="/feed.xml">RSS</a>
+      <a href="https://github.com/aDou-137" target="_blank" rel="noopener">GitHub</a>
+      <button class="footer-lock" data-lock-btn>锁定本站</button>
+    </p>
+    <p class="footer-note">Powered by GitHub Pages</p>
   </footer>
-
-  <script src="script.js"></script>
+  <noscript><div class="nojs-note">本站需要启用 JavaScript 并输入访问密码。</div></noscript>
+  <script src="/lock.js"></script>
+  <script src="/script.js"></script>
 </body>
 </html>
